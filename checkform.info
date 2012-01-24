@@ -1,0 +1,7 @@
+; $Id$
+name = "checkform"
+description = "module created by T Readings Design to troubleshoot node/edit and other forms"
+core = 6.x
+php = 5.1
+package = "T Readings Design"
+dependencies[] = devel

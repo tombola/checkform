@@ -1,0 +1,119 @@
+<?php
+/* implementation of hook_help */
+function checkform_help($path, $arg) {
+	switch ($path){
+		case 'admin/help#checkform':
+			$txt = 'Module created by T Readings Design to examine the form array created for node/edit';
+			return '<p>'.t($txt).'</p>';#
+			break;
+	}
+}
+
+function checkform_perm() {
+	return array('configure checkform settings');
+} 
+
+function checkform_menu() {
+  $items = array();
+  // see function checkform_admin
+  $items['admin/settings/checkform'] = array(
+    'title' => 'checkform settings',
+    'description' => 'checkform module configuration',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('checkform_admin'),
+    'access arguments' => array('access administration pages'),
+    'type' => MENU_NORMAL_ITEM,
+   );
+   // see function checkform_makepage
+   /* $items['checkform'] = array(
+    'title' => 'checkform Module',
+    'page callback' => 'checkform_makepage',
+    'access arguments' => array('access checkform content'),
+    'type' => MENU_CALLBACK
+  ); */
+
+  return $items;
+}
+
+/**
+* Generate HTML for the checkform block
+* @param op the operation from the URL
+* @param delta offset
+* @returns block HTML
+*/
+function checkform_block($op='list', $delta=0) {
+
+  // listing of blocks, such as on the admin/block page
+  if ($op == "list") {
+    $block[0]["info"] = t('Check Form');
+    return $block;
+  } else if ($op == 'view') {
+    // our block content 
+  }
+}
+
+
+// NB - _admin is not a hook - this is just an arbitrary function to return the admin form for hook_menu callback
+function checkform_admin() {
+  $form['fieldset']['checkform_enabled'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Enable'),
+    '#default_value' => variable_get('checkform_enabled', 0),
+    '#description' => t("Enable checkform functions"),
+  );
+  $form['checkform_formid'] = array(
+    '#type' => 'textfield',
+    '#title' => t('form-id'),
+    '#default_value' => variable_get('checkform_formid', 'product_node_form'),
+    '#size' => 60,
+    '#description' => t("The form id of the form you wish to check"),
+    '#maxlength' => 60,
+    '#required' => TRUE,
+  );
+  /* $form['fieldset'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Fieldset Title')
+  ); */
+  $form['fieldset']['checkform_displayids'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Display Form IDs'),
+    '#default_value' => variable_get('checkform_displayids', 0),
+    '#description' => t("display form ids when they are rendered"),
+  );
+  // example textarea sets content of 'checkform Module' page - see function checkform_makepage
+  /* $form['fieldset']['checkform_settingname3'] = array(
+    '#type' => 'textarea',
+    '#title' => t('textarea setting field'),
+    '#default_value' => 
+	variable_get('checkform_settingname3', 'default content'),
+    '#cols' => 50,
+    '#rows' => 5,
+    '#description' => t("description of setting"),
+  ); */
+  return system_settings_form($form);
+}
+
+// NB - _makepage is not a hook - this is just an arbitrary function to return page content for hook_menu callback
+function checkform_makepage() {
+  $page_content = variable_get('checkform_formid', '');
+  if ($page_content == '') {
+    $page_content = "No checkform page content.";
+  }
+  return $page_content;
+}  
+
+/*-----------------------------------------------------------------------------------------------------*/
+
+function checkform_form_alter(&$form, $form_state, $form_id) {
+  if (variable_get('checkform_enabled', 0)) {
+    $displayid = variable_get('checkform_displayids', null);
+    $formid_render = variable_get('checkform_formid', null);
+    drupal_set_message();
+    if ($displayid){dpm($form_id);}
+    if ($form_id == $formid_render) {
+      dpm($form);
+      dpm($form_state);
+    }
+  }
+}
+?>
